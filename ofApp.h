@@ -4,6 +4,7 @@
 #include "ofxOsc.h"
 
 #define PORT 12345
+#define MAX_NUM_MSG_STRINGS 40
 
 class ofApp : public ofBaseApp{
 
@@ -23,5 +24,12 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		
+
+        ofxOscReceiver receiver;
+        ofTrueTypeFont font;
+
+        int currentMsgString;
+        string msgStrings[MAX_NUM_MSG_STRINGS];
+        float timers[MAX_NUM_MSG_STRINGS];
+
 };

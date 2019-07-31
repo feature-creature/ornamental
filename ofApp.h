@@ -32,6 +32,11 @@ class ofApp : public ofBaseApp{
         void updateAbsolute(ofxOscMessage msg, vector<float>& sensor);
         void drawAbsolute(vector<float> sensor,vector<float> status);
 
+        void updateGyro(ofxOscMessage msg, vector<float>& sensor);
+        void drawGyro(vector<float> sensor);
+        void updateAcc(ofxOscMessage msg, vector<float>& sensor);
+        void drawAcc(vector<float> sensor);
+
         ofxOscReceiver receiver;
         ofTrueTypeFont font;
 
@@ -53,6 +58,10 @@ class ofApp : public ofBaseApp{
         vector <float> delta;
         vector <float> theta;
         vector <float> gamma;
+
+        // Motion
+        vector <float> gyro;
+        vector <float> acc;
 
 
         int currentMsgString;

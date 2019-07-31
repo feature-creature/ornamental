@@ -32,10 +32,8 @@ class ofApp : public ofBaseApp{
         void updateAbsolute(ofxOscMessage msg, vector<float>& sensor);
         void drawAbsolute(vector<float> sensor,vector<float> status);
 
-        void updateGyro(ofxOscMessage msg, vector<float>& sensor);
-        void drawGyro(vector<float> sensor);
-        void updateAcc(ofxOscMessage msg, vector<float>& sensor);
-        void drawAcc(vector<float> sensor);
+        void updateMotion(ofxOscMessage msg, vector<float>& sensorX,vector<float>& sensorY,vector<float>& sensorZ);
+        void drawMotion(vector<float> sensorX,vector<float> sensorY,vector<float> sensorZ);
 
         void updateBatt(ofxOscMessage msg, int& sensor);
         void drawBatt(int sensor);
@@ -63,8 +61,12 @@ class ofApp : public ofBaseApp{
         vector <float> gamma;
 
         // Motion
-        vector <float> gyro;
-        vector <float> acc;
+        vector <float> gyroX;
+        vector <float> gyroY;
+        vector <float> gyroZ;
+        vector <float> accX;
+        vector <float> accY;
+        vector <float> accZ;
 
         // Battery
         int batt;

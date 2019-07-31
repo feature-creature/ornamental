@@ -25,8 +25,12 @@ void ofApp::setup(){
     gamma.assign(bufferSize,0.0);
 
     // Motion
-    gyro.assign(bufferSize,0.0);
-    acc.assign(bufferSize,0.0);
+    gyroX.assign(bufferSize,0.0);
+    gyroY.assign(bufferSize,0.0);
+    gyroZ.assign(bufferSize,0.0);
+    accX.assign(bufferSize,0.0);
+    accY.assign(bufferSize,0.0);
+    accZ.assign(bufferSize,0.0);
 
     // Battery
     batt = 0;
@@ -65,8 +69,10 @@ void ofApp::update(){
         if(m.getAddress() == "/muse/elements/gamma_absolute")updateAbsolute(m,gamma);
 
         // 52Hz
-        if(m.getAddress() == "/muse/gyro")updateGyro(m,gyro);
-        if(m.getAddress() == "/muse/acc")updateGyro(m,acc);
+        if(m.getAddress() == "/muse/gyro")updateMotion(m,gyroX,gyroY,gyroZ);
+
+        // 52Hz
+        if(m.getAddress() == "/muse/acc")updateMotion(m,accX,accY,accZ);
 
         // 0.1Hz
         if(m.getAddress() == "/muse/batt")updateBatt(m,batt);
@@ -89,8 +95,7 @@ void ofApp::draw(){
     drawAbsolute(theta,tp9Status);
     drawAbsolute(gamma,tp9Status);
 
-    drawGyro(gyro);
-    drawAcc(acc);
+    drawMotion(gyroX,gyroY,gyroZ);
 
     drawBatt(batt);
 
@@ -158,58 +163,36 @@ void ofApp::drawAbsolute(vector <float> sensor, vector <float> status){
 }
 
 //--------------------------------------------------------------
-void ofApp::updateGyro(ofxOscMessage msg, vector <float>& sensor){
-    sensor.push_back(msg.getArgAsFloat(0));
-    if(sensor.size() >= bufferSize)sensor.erase(sensor.begin(),sensor.begin()+1);
+void ofApp::updateMotion(ofxOscMessage msg, vector <float>& sensorX,vector<float>& sensorY,vector<float>& sensorZ){
+    sensorX.push_back(msg.getArgAsFloat(0));
+    sensorY.push_back(msg.getArgAsFloat(1));
+    sensorZ.push_back(msg.getArgAsFloat(2));
+    if(sensorX.size() >= bufferSize)sensorX.erase(sensorX.begin(),sensorX.begin()+1);
+    if(sensorY.size() >= bufferSize)sensorY.erase(sensorY.begin(),sensorY.begin()+1);
+    if(sensorZ.size() >= bufferSize)sensorZ.erase(sensorZ.begin(),sensorZ.begin()+1);
 }
 
 
+
 //--------------------------------------------------------------
-void ofApp::drawGyro(vector <float> sensor){
+void ofApp::drawMotion(vector <float> sensorX,vector<float> sensorY,vector<float> sensorZ){
     ofPushStyle();
     ofPushMatrix();
 
-    ofTranslate(32,350,0);
-
     ofNoFill();
+    ofTranslate(100,150);
+    ofSetColor(100);
+    ofDrawEllipse(0,0,15,15);
+    ofDrawLine(0,0,ofMap(sensorZ[sensorZ.size()-1],-245,245,-100,100),ofMap(sensorY[sensorY.size()-1],-245,245,100,-100));
+    ofTranslate(ofMap(sensorZ[sensorZ.size()-1],-245,245,-50,50),ofMap(sensorY[sensorY.size()-1],-245,245,50,-50));
+    ofDrawEllipse(0,0,20,20);
+    ofDrawEllipse(0,0,100,100);
     ofSetColor(255);
-
-    ofBeginShape();
-    for(unsigned int i = 0; i < sensor.size(); i++){
-        ofVertex(i*(ofGetWidth()/bufferSize),ofMap(sensor[i],-245,245,0,-300));
-    }
-    ofEndShape(false);
+    ofTranslate(ofMap(sensorZ[sensorZ.size()-1],-245,245,-50,50),ofMap(sensorY[sensorY.size()-1],-245,245,50,-50));
+    ofDrawEllipse(0,0,25,25);
 
     ofPopMatrix();
     ofPopStyle();
-
-}
-
-//--------------------------------------------------------------
-void ofApp::updateAcc(ofxOscMessage msg, vector <float>& sensor){
-    sensor.push_back(msg.getArgAsFloat(0));
-    if(sensor.size() >= bufferSize)sensor.erase(sensor.begin(),sensor.begin()+1);
-}
-
-//--------------------------------------------------------------
-void ofApp::drawAcc(vector <float> sensor){
-    ofPushStyle();
-    ofPushMatrix();
-
-    ofTranslate(32,350,0);
-
-    ofNoFill();
-    ofSetColor(255);
-
-    ofBeginShape();
-    for(unsigned int i = 0; i < sensor.size(); i++){
-        ofVertex(i*(ofGetWidth()/bufferSize),ofMap(sensor[i],-2,2,0,-300));
-    }
-    ofEndShape(false);
-
-    ofPopMatrix();
-    ofPopStyle();
-
 }
 
 //--------------------------------------------------------------

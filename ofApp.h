@@ -37,6 +37,9 @@ class ofApp : public ofBaseApp{
         void updateAcc(ofxOscMessage msg, vector<float>& sensor);
         void drawAcc(vector<float> sensor);
 
+        void updateBatt(ofxOscMessage msg, int& sensor);
+        void drawBatt(int sensor);
+
         ofxOscReceiver receiver;
         ofTrueTypeFont font;
 
@@ -62,6 +65,9 @@ class ofApp : public ofBaseApp{
         // Motion
         vector <float> gyro;
         vector <float> acc;
+
+        // Battery
+        int batt;
 
 
         int currentMsgString;

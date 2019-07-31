@@ -95,7 +95,7 @@ void ofApp::draw(){
     drawAbsolute(theta,tp9Status);
     drawAbsolute(gamma,tp9Status);
 
-    drawMotion(gyroX,gyroY,gyroZ);
+    drawMotion(gyroX,gyroY,gyroZ,accX,accY,accZ);
 
     drawBatt(batt);
 
@@ -175,7 +175,7 @@ void ofApp::updateMotion(ofxOscMessage msg, vector <float>& sensorX,vector<float
 
 
 //--------------------------------------------------------------
-void ofApp::drawMotion(vector <float> sensorX,vector<float> sensorY,vector<float> sensorZ){
+void ofApp::drawMotion(vector <float> sensorX,vector<float> sensorY,vector<float> sensorZ,vector <float> sensor2X,vector<float> sensor2Y,vector<float> sensor2Z){
     ofPushStyle();
     ofPushMatrix();
 

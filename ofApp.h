@@ -33,7 +33,7 @@ class ofApp : public ofBaseApp{
         void drawAbsolute(vector<float> sensor,vector<float> status);
 
         void updateMotion(ofxOscMessage msg, vector<float>& sensorX,vector<float>& sensorY,vector<float>& sensorZ);
-        void drawMotion(vector<float> sensorX,vector<float> sensorY,vector<float> sensorZ);
+        void drawMotion(vector<float> sensorX,vector<float> sensorY,vector<float> sensorZ,vector<float> sensor2X,vector<float> sensor2Y,vector<float> sensor2Z);
 
         void updateBatt(ofxOscMessage msg, int& sensor);
         void drawBatt(int sensor);

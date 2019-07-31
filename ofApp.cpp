@@ -24,6 +24,10 @@ void ofApp::setup(){
     theta.assign(bufferSize,0.0);
     gamma.assign(bufferSize,0.0);
 
+    // Motion
+    gyro.assign(bufferSize,0.0);
+    acc.assign(bufferSize,0.0);
+
 
 }
 
@@ -56,6 +60,10 @@ void ofApp::update(){
         if(m.getAddress() == "/muse/elements/delta_absolute")updateAbsolute(m,delta);
         if(m.getAddress() == "/muse/elements/theta_absolute")updateAbsolute(m,theta);
         if(m.getAddress() == "/muse/elements/gamma_absolute")updateAbsolute(m,gamma);
+
+        // 52Hz
+        if(m.getAddress() == "/muse/gyro")updateGyro(m,gyro);
+        if(m.getAddress() == "/muse/acc")updateGyro(m,acc);
     }
 }
 
@@ -73,6 +81,9 @@ void ofApp::draw(){
     drawAbsolute(delta,tp9Status);
     drawAbsolute(theta,tp9Status);
     drawAbsolute(gamma,tp9Status);
+
+    drawGyro(gyro);
+    drawAcc(acc);
 
     string buf = "listening for osc messages on port " + ofToString(PORT);
     ofDrawBitmapStringHighlight(buf,10,20);
@@ -137,6 +148,60 @@ void ofApp::drawAbsolute(vector <float> sensor, vector <float> status){
     ofPopStyle();
 }
 
+//--------------------------------------------------------------
+void ofApp::updateGyro(ofxOscMessage msg, vector <float>& sensor){
+    sensor.push_back(msg.getArgAsFloat(0));
+    if(sensor.size() >= bufferSize)sensor.erase(sensor.begin(),sensor.begin()+1);
+}
+
+
+//--------------------------------------------------------------
+void ofApp::drawGyro(vector <float> sensor){
+    ofPushStyle();
+    ofPushMatrix();
+
+    ofTranslate(32,350,0);
+
+    ofNoFill();
+    ofSetColor(255);
+
+    ofBeginShape();
+    for(unsigned int i = 0; i < sensor.size(); i++){
+        ofVertex(i*(ofGetWidth()/bufferSize),ofMap(sensor[i],-245,245,0,-300));
+    }
+    ofEndShape(false);
+
+    ofPopMatrix();
+    ofPopStyle();
+
+}
+
+//--------------------------------------------------------------
+void ofApp::updateAcc(ofxOscMessage msg, vector <float>& sensor){
+    sensor.push_back(msg.getArgAsFloat(0));
+    if(sensor.size() >= bufferSize)sensor.erase(sensor.begin(),sensor.begin()+1);
+}
+
+//--------------------------------------------------------------
+void ofApp::drawAcc(vector <float> sensor){
+    ofPushStyle();
+    ofPushMatrix();
+
+    ofTranslate(32,350,0);
+
+    ofNoFill();
+    ofSetColor(255);
+
+    ofBeginShape();
+    for(unsigned int i = 0; i < sensor.size(); i++){
+        ofVertex(i*(ofGetWidth()/bufferSize),ofMap(sensor[i],-2,2,0,-300));
+    }
+    ofEndShape(false);
+
+    ofPopMatrix();
+    ofPopStyle();
+
+}
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){

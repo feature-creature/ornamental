@@ -28,6 +28,9 @@ void ofApp::setup(){
     gyro.assign(bufferSize,0.0);
     acc.assign(bufferSize,0.0);
 
+    // Battery
+    batt = 0;
+
 
 }
 
@@ -64,6 +67,10 @@ void ofApp::update(){
         // 52Hz
         if(m.getAddress() == "/muse/gyro")updateGyro(m,gyro);
         if(m.getAddress() == "/muse/acc")updateGyro(m,acc);
+
+        // 0.1Hz
+        if(m.getAddress() == "/muse/batt")updateBatt(m,batt);
+
     }
 }
 
@@ -84,6 +91,8 @@ void ofApp::draw(){
 
     drawGyro(gyro);
     drawAcc(acc);
+
+    drawBatt(batt);
 
     string buf = "listening for osc messages on port " + ofToString(PORT);
     ofDrawBitmapStringHighlight(buf,10,20);
@@ -197,6 +206,27 @@ void ofApp::drawAcc(vector <float> sensor){
         ofVertex(i*(ofGetWidth()/bufferSize),ofMap(sensor[i],-2,2,0,-300));
     }
     ofEndShape(false);
+
+    ofPopMatrix();
+    ofPopStyle();
+
+}
+
+//--------------------------------------------------------------
+void ofApp::updateBatt(ofxOscMessage msg, int& sensor){
+    sensor = msg.getArgAsInt32(0);
+}
+
+//--------------------------------------------------------------
+void ofApp::drawBatt(int sensor){
+    ofPushStyle();
+    ofPushMatrix();
+
+
+    ofNoFill();
+    ofSetColor(255);
+    string battPercent = ofToString(sensor)+"%";
+    ofDrawBitmapStringHighlight(battPercent,10,50);
 
     ofPopMatrix();
     ofPopStyle();

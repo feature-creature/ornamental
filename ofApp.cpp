@@ -10,24 +10,25 @@ void ofApp::setup(){
     ofLog() << "Listening for OSC messages on port " << PORT;
 
     bufferSize = 1280;
+
+    // EEG
     tp9.assign(bufferSize,0.0);
     af7.assign(bufferSize,0.0);
     af8.assign(bufferSize,0.0);
     tp10.assign(bufferSize,0.0);
 
+    // Absolutes
+    alpha.assign(bufferSize,0.0);
+    beta.assign(bufferSize,0.0);
+    delta.assign(bufferSize,0.0);
+    theta.assign(bufferSize,0.0);
+    gamma.assign(bufferSize,0.0);
+
+
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    // clear old data
-    /*
-    for(int i = 0; i < MAX_NUM_MSG_STRINGS; i++){
-        if(timers[i] < ofGetElapsedTimef()){
-            msgStrings[i] = "";
-        }
-    }
-    */
-
     while(receiver.hasWaitingMessages()){
         ofxOscMessage m;
         receiver.getNextMessage(m);
@@ -49,53 +50,29 @@ void ofApp::update(){
             updateEEGStatus(m,tp10Status,3);
         }
 
+        // 10Hz
+        if(m.getAddress() == "/muse/elements/alpha_absolute")updateAbsolute(m,alpha);
+        if(m.getAddress() == "/muse/elements/beta_absolute")updateAbsolute(m,beta);
+        if(m.getAddress() == "/muse/elements/delta_absolute")updateAbsolute(m,delta);
+        if(m.getAddress() == "/muse/elements/theta_absolute")updateAbsolute(m,theta);
+        if(m.getAddress() == "/muse/elements/gamma_absolute")updateAbsolute(m,gamma);
     }
-
-        //basic text output 
-        /*
-        string msgString;
-        msgString = m.getAddress();
-        msgString += ":";
-
-        for(size_t i = 0; i < m.getNumArgs(); i++){
-            msgString += " ";   
-            msgString += m.getArgTypeName(i);
-            msgString += ":";
-            
-            if(m.getArgType(i) == OFXOSC_TYPE_INT32){
-                msgString += ofToString(m.getArgAsInt32(i));
-            }
-            else if(m.getArgType(i) == OFXOSC_TYPE_FLOAT){
-                msgString += ofToString(m.getArgAsFloat(i));
-            }
-            else {
-                msgString += "unhandled argument type " + m.getArgTypeName(i);
-            }
-        }
-
-        msgStrings[currentMsgString] = msgString;
-        timers[currentMsgString] = ofGetElapsedTimef() + 5.0f;
-        currentMsgString = (currentMsgString + 1) % MAX_NUM_MSG_STRINGS;
-
-        msgStrings[currentMsgString] = "";
-    }
-    */
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackgroundGradient(100,0);
 
-    /*
-    for(int i = 0; i < MAX_NUM_MSG_STRINGS; i++){
-        ofDrawBitmapStringHighlight(msgStrings[i],10,40 + 15 * i);
-    }
-    */
-
     drawEEG(tp9,tp9Status);
     drawEEG(af7,af7Status);
     drawEEG(af8,af8Status);
     drawEEG(tp10,tp10Status);
+
+    drawAbsolute(alpha,tp9Status);
+    drawAbsolute(beta,tp9Status);
+    drawAbsolute(delta,tp9Status);
+    drawAbsolute(theta,tp9Status);
+    drawAbsolute(gamma,tp9Status);
 
     string buf = "listening for osc messages on port " + ofToString(PORT);
     ofDrawBitmapStringHighlight(buf,10,20);
@@ -132,6 +109,34 @@ void ofApp::drawEEG(vector <float> sensor,vector <float> status){
     ofPopMatrix();
     ofPopStyle();
 }
+
+//--------------------------------------------------------------
+void ofApp::updateAbsolute(ofxOscMessage msg, vector<float>& sensor){
+    sensor.push_back(msg.getArgAsFloat(0));
+    if(sensor.size() >= bufferSize)sensor.erase(sensor.begin(),sensor.begin()+1);
+}
+
+//--------------------------------------------------------------
+void ofApp::drawAbsolute(vector <float> sensor, vector <float> status){
+    ofPushStyle();
+    ofPushMatrix();
+
+    ofTranslate(32,600,0);
+
+    ofNoFill();
+    status.size() > 0 ? ofSetColor(ofMap(status[status.size() - 1],4,1,100,255)) : ofSetColor(100);
+
+    ofBeginShape();
+    for(unsigned int i = 0; i < sensor.size(); i++){
+        // max/min?
+        ofVertex(i*(ofGetWidth()/bufferSize),ofMap(sensor[i],0,2,0,-300));
+    }
+    ofEndShape(false);
+
+    ofPopMatrix();
+    ofPopStyle();
+}
+
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
